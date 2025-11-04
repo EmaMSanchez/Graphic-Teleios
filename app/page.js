@@ -15,46 +15,77 @@ export default function Home() {
     'Backtester5Y': [2.4623568447325823,-2.65150685804107,2.492912576957373,-2.77062880034549,2.5560845418518423,2.7264683034356643,2.612191269259393,2.4863362621464873,-2.6718375798865046,2.4708453878406864,2.4796591412992166,2.4989048550293425,-2.75324792809923,2.8295116256561053]
   };
 
-  const calculateReturns = (trades, leverageMultiplier = 1) => {
-    const leveragedTrades = trades.map(t => t * leverageMultiplier);
-    const linearReturn = leveragedTrades.reduce((sum, pct) => sum + pct, 0);
-    const compoundReturn = leveragedTrades.reduce((acc, pct) => acc * (1 + pct / 100), 1);
-    const compoundReturnPct = (compoundReturn - 1) * 100;
-    const winningTrades = leveragedTrades.filter(t => t > 0);
-    const losingTrades = leveragedTrades.filter(t => t < 0);
-    const winRate = (winningTrades.length / leveragedTrades.length) * 100;
-    const avgWin = winningTrades.reduce((sum, t) => sum + t, 0) / winningTrades.length;
-    const avgLoss = losingTrades.reduce((sum, t) => sum + t, 0) / losingTrades.length;
-    const largestWin = Math.max(...leveragedTrades);
-    const largestLoss = Math.min(...leveragedTrades);
-    
-    let peak = 100;
-    let maxDrawdown = 0;
-    let currentCapital = 100000;
-    
-    leveragedTrades.forEach(pct => {
-      currentCapital = currentCapital * (1 + pct / 100);
-      if (currentCapital > peak) peak = currentCapital;
-      const drawdown = ((peak - currentCapital) / peak) * 100;
-      if (drawdown > maxDrawdown) maxDrawdown = drawdown;
-    });
-    
-    return {
-      linearReturn,
-      compoundReturnPct,
-      totalTrades: leveragedTrades.length,
-      winningTrades: winningTrades.length,
-      losingTrades: losingTrades.length,
-      winRate,
-      avgWin,
-      avgLoss,
-      profitFactor: Math.abs(avgWin * winningTrades.length) / Math.abs(avgLoss * losingTrades.length),
-      largestWin,
-      largestLoss,
-      maxDrawdown,
-      finalCapital: currentCapital
-    };
+const calculateReturns = (trades, leverageMultiplier = 1, initialCapital = 100) => {
+  // Asumimos: `trades` ya son porcentajes netos (comisiones aplicadas)
+  const leveragedTrades = trades.map(t => t * leverageMultiplier);
+
+  // Lineal (suma simple de % apalancados)
+  const linearReturn = leveragedTrades.reduce((sum, pct) => sum + pct, 0);
+
+  // Compuesto (factor acumulado)
+  const compoundFactor = leveragedTrades.reduce((acc, pct) => acc * (1 + pct / 100), 1);
+  const compoundReturnPct = (compoundFactor - 1) * 100;
+
+  // Separar wins/losses
+  const winningTrades = leveragedTrades.filter(t => t > 0);
+  const losingTrades = leveragedTrades.filter(t => t < 0);
+
+  const totalTrades = leveragedTrades.length;
+  const winRate = totalTrades ? (winningTrades.length / totalTrades) * 100 : 0;
+
+  const sumWins = winningTrades.reduce((s, v) => s + v, 0);   // suma de % positivos
+  const sumLosses = losingTrades.reduce((s, v) => s + v, 0);  // suma de % negativos (valor negativo)
+
+  const avgWin = winningTrades.length ? sumWins / winningTrades.length : 0;
+  const avgLoss = losingTrades.length ? sumLosses / losingTrades.length : 0;
+
+  // Profit factor: grossProfit / grossLoss (usar valores absolutos)
+  const profitFactor = Math.abs(sumLosses) > 0
+    ? Math.abs(sumWins) / Math.abs(sumLosses)
+    : (sumWins > 0 ? Infinity : 0);
+
+  const largestWin = winningTrades.length ? Math.max(...winningTrades) : 0;
+  const largestLoss = losingTrades.length ? Math.min(...losingTrades) : 0;
+
+  // Simulación de capital y drawdown usando initialCapital consistente
+  let peak = initialCapital;
+  let maxDrawdown = 0;
+  let currentCapital = initialCapital;
+
+  for (const pct of leveragedTrades) {
+    // Si pct <= -100, interpretamos liquidación/total loss (capital a 0)
+    if (pct <= -100) {
+      currentCapital = 0;
+      maxDrawdown = 100;
+      break;
+    }
+    currentCapital = currentCapital * (1 + pct / 100);
+    if (currentCapital > peak) peak = currentCapital;
+    const drawdown = ((peak - currentCapital) / peak) * 100;
+    if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+    if (!isFinite(currentCapital) || currentCapital <= 0) {
+      currentCapital = Math.max(0, currentCapital);
+      break;
+    }
+  }
+
+  return {
+    linearReturn,
+    compoundReturnPct,
+    totalTrades,
+    winningTrades: winningTrades.length,
+    losingTrades: losingTrades.length,
+    winRate,
+    avgWin,
+    avgLoss,
+    profitFactor,
+    largestWin,
+    largestLoss,
+    maxDrawdown,
+    finalCapital: currentCapital,
+    initialCapital
   };
+};
 
   const results = useMemo(() => ({
     'Backtester1Y': calculateReturns(botsData['Backtester1Y'], leverage),
@@ -121,10 +152,10 @@ export default function Home() {
           )}
         </div>
 
-        <div className="mb-6 flex gap-4">
+        <div className="mb-4 sm:mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setSelectedBot('all')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base flex-shrink-0 ${
               selectedBot === 'all' 
                 ? 'bg-blue-600 text-white shadow-lg' 
                 : 'bg-white text-slate-700 hover:bg-blue-50'
@@ -136,7 +167,7 @@ export default function Home() {
             <button
               key={bot}
               onClick={() => setSelectedBot(bot)}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base flex-shrink-0 ${
                 selectedBot === bot 
                   ? 'bg-blue-600 text-white shadow-lg' 
                   : 'bg-white text-slate-700 hover:bg-blue-50'
@@ -147,19 +178,22 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="grid gap-6">
+        <div className="grid gap-4 sm:gap-6">
           {getBotData().map(([botName, data]) => (
             <div key={botName} className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <BarChart3 className="w-6 h-6" />
-                  {botName}
+              {/* Card Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
+                    {botName}
+                  </h2>
                   {leverage > 1 && (
-                    <span className="ml-auto bg-purple-500 px-3 py-1 rounded-full text-sm font-semibold">
+                    <span className="bg-purple-500 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-white self-start sm:ml-auto">
                       Apalancamiento x{leverage}
                     </span>
                   )}
-                </h2>
+                </div>
               </div>
 
               <div className="p-6">
@@ -322,7 +356,7 @@ export default function Home() {
                 onClick={irAGraphic}
                 className={`px-6 py-3 rounded-lg font-bold bg-purple-600 text-white shadow-lg  scale-100 mt-6 transition-all duration-300 hover:scale-110 justify-center mx-auto flex items-center gap-2` }
               >
-                Grafica
+                📊 Ver Gráficas
               </button>
       </div>
     </div>

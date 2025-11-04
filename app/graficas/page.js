@@ -10,18 +10,21 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend
-} from 'recharts'; // 👈 librería de gráficos
+} from 'recharts'; 
 import { useRouter } from "next/navigation"
 
 const TradingBotsAnalysis = () => {
   const [selectedBot, setSelectedBot] = useState('all');
   const [leverage, setLeverage] = useState(1);
+  const [chartMode, setChartMode] = useState('comparative');
   
   // 🔹 Aquí vos cargás tu objeto botsData con tus datos
-  const botsData = {
-    'Beta_-1.5_2': [-1.54, 2.03, 2.13, 2.02, -1.52, 2.02, 2.04, -1.54, 2.09, 2.00, -1.51, 2.07, -1.53, -1.56, 2.03, 2.02, 2.12, -1.60, 2.21, 2.01, -1.53, -1.55, -1.59, 2.03, -1.52, 2.15, -1.60, -1.52, 2.19, 2.04, 2.05, -1.58, 2.12, -1.51, -1.58, 2.05, -1.56, -1.55, -1.51, 2.12, 2.22, 2.29, -1.50, -1.89, -1.52, 2.14, 2.09, -1.53, 2.06, 2.10, 2.01, -1.75, 2.37, -1.67, -1.67, -1.62, -1.50, -1.50, -1.53, -1.57, 2.04, 2.27, 2.28, -1.52, -1.52, 2.25, 2.04, -1.66, -1.73, -1.54, 2.03, -1.76, 2.05, -1.51, -1.51, -1.59, 2.34, -1.61, 2.23, 2.44, -1.51, 2.21, 2.05, -1.69, -1.59, -1.55, -1.58, 2.23, -1.58, -1.51, 2.03, -1.57, 2.02, -1.54, -1.52, 2.04, -1.51, -1.52, 2.10, 2.04, -1.58, 2.08, -1.55, 2.05, -1.53, 2.05, -1.56, -1.51, 2.01, 2.00, -1.61, 2.14, -1.71, 2.03, 2.26, -1.67, -1.56, 2.00, 2.03, 2.21, -1.73, 2.02, 2.09, -1.50, -1.54, -1.51, -1.54, 2.04, 2.32, 2.02, -1.50, 2.10, 2.17, -1.51, -1.50, 2.05, -1.61, -1.56, -1.55, 2.05, -1.63, -2.01, 2.04, -1.79, 2.01, 2.02, -1.58, -1.57, -1.51, 2.23, 2.17, 2.00, 2.02, 2.33, 2.09, 2.73, -1.61, 2.08, -1.60, -1.51, -1.57, 2.06, -1.54, -1.53, -1.51, -1.51, 2.05, -1.55, 2.03, -1.54, 2.00, -1.53, 2.02, 2.06, 2.12, 2.05, -1.54, 2.09, -1.65, -1.60, 2.01, 2.06, 2.09, -1.70, -1.54, 2.20, -1.65, 2.09, 2.17, 2.34, 2.17, 2.01, -1.52, 2.11, 2.00, 2.72, -1.75, 2.06, -1.58, 2.22, -1.52, -1.55, 2.04, -1.60, -1.69, 2.05, 2.03, -1.62, -1.68, 2.21, -1.64, -1.63, -1.72, -1.56, -1.68, -1.52, -1.54, 2.10, -1.51, 2.04, -1.56, -2.00, -1.51, -1.53, -1.50, 2.24, -1.67, -1.51, 2.07, -1.53, -1.53, 2.01, 2.09, -1.52, -1.54, -1.69, -1.51, 2.17, 2.28, -1.58, 2.06, -1.58, -1.51, 2.01, 2.18, 2.04, -1.60, 2.04, -1.51, -1.77, 2.49, -1.53, 2.06, -1.76, 2.31, -1.52, 2.09, -1.51, -1.59, -1.55, -1.52, -1.50, -1.54, 2.16, 2.10, 2.09, 2.39, 2.03, -1.54, -1.51, -1.56, -1.60, 2.22, -1.52, 2.01, -1.51, -1.56, 2.05, 2.46, 2.10, -1.58, -1.51, -1.50, -1.59, -1.52, -1.51, 2.08, -1.52, -1.52, -1.50, -1.52, 2.05, -1.54, -1.59, 2.04, -1.59, -1.56, -1.50, -1.50, -1.52, 2.08, -1.51, -1.55, 2.08, 2.16, 2.05, 2.09, -1.55, 2.02, 2.06, -1.53, -1.52, -1.57, 2.06, -1.52, 2.18, -1.50, -1.52, 2.07, 2.04, -1.51, 2.11, 2.05, -1.51, -1.51, -1.51, -1.51, 2.29, 2.12, 2.58, 2.09, 2.02, -1.51, 2.13, 2.00, -1.66, -1.68, -1.55, -1.51, -1.50, 2.03, -1.52, 2.05, -1.50, 2.02, 2.00, -1.51, -1.55, -1.59, 2.04, 2.19, -1.60, -1.50, 2.05, -1.52, 2.04, -1.60, -1.89, 2.17, -1.57, 2.08, 2.03, -1.57, -1.53, -1.51, -1.62, -1.50, -1.50, 2.03, 2.01, -1.64, 2.01, -1.53, -1.51],
-    'Hybrid-1A': [-2.04, 2.20, 2.00, -2.12, -2.03, 2.29, -2.02, -2.26, 2.03, -2.08, -2.05, -2.11, -2.00, -2.10, -2.08, -2.03, 2.03, -2.01, -2.05, 2.05, -2.01, 2.10, -2.07, -2.01, -2.04, -2.15, -2.20, 2.04, -2.18, 2.28, 2.16, -2.05, 2.02, -2.02, 2.12, -2.19, -2.13, -2.11, -2.10, -2.03, -2.01, 2.10, 2.05, -2.32, -2.06, 2.09, 2.02, 2.06, -2.07, -2.02, -2.26, -2.15, -2.04, 2.04, -2.01, -2.08, 2.07, -2.02, -2.03, 2.10, 2.31, 2.04, -2.45, 2.00, 2.01, -2.04, 2.06, 2.00, -2.13, -2.05, 2.00, -2.08, -2.03, 2.21, -2.01, 2.03, -2.37, -2.01, -2.03, 2.05, -2.12, 2.01, 2.00, -2.13, -2.02, 2.05, 2.10, -2.02, -2.10, -2.01, -2.01, 2.12, -2.04, -2.17, -2.01, 2.10, 2.04, 2.01, 2.06, -2.17, -2.05, 2.02, -2.01, -2.02, 2.01, 2.10, 2.21, 2.00, 2.06, -2.01, 2.17, 2.01, -2.05, -2.00, 2.78, -2.04, -2.03, -2.03, -2.01, -2.02, -2.05, -2.17, 2.15, 2.02, -2.02, 2.33, 2.04, 2.09, 2.02, 2.00, 2.02, -2.01, 2.01, -2.01, 2.06, -2.05, 2.03, -2.01, -2.11, -2.07, -2.55, -2.06, -2.05, 2.10, -2.01, -2.08, -2.11, -2.01, 2.07, 2.00, -2.01, -2.45, -2.01, 2.20, 2.15, 2.17, -2.18, -2.09, 2.03, 2.50, -2.01, 2.25, 2.02, -2.04, 2.02, -2.20, 2.00, 2.28, 2.02, 2.11, -2.01, 2.00, -2.03, 2.06, 2.09, -2.02, 2.03, -2.03, 2.03, -2.03, 2.20, 2.05, 2.03, -2.02, -2.19, -2.08, 2.11, -2.19, 2.04, -2.45, 2.02, 2.07, -2.06, 2.01, 2.06, 2.01, 2.20, -2.12, -3.34, -2.10, 2.01, 2.02, 2.05, -2.03, 2.00, -2.07, 2.01, -2.15, -2.03, -2.06, -2.01, 2.00, 2.06, 2.05, 2.09, -2.06, 2.06, 2.01, 2.11, 2.17, -2.09, 2.04, -2.06, 2.08, -2.03, -2.01, -2.05, 2.01, 2.02, 2.06, 2.07, -2.11, -2.24, 2.03, -2.03, 2.03, -2.05, 2.07, -2.07, 2.07, 2.01, -2.16, -2.04, 2.11, -2.02, 2.04, 2.07, -2.09, -2.16, -2.18, -2.07, 2.15, 2.03, 2.02, 2.03, 2.03, 2.02, 2.01, 2.05, -2.04, -2.02, 2.01, -2.02, -2.03, 2.03, -2.01, -2.06, 2.02, -2.08, -2.00, 2.05, 2.00, -3.20, -2.06, 2.01, 2.19, -2.02, 2.09, 2.18, 2.01, 2.08, -2.01, -2.10, 2.07, -2.10, -2.05],
-    'Hybrid2': [-2.01, 2.00, 2.10, 2.16, -2.05, 2.17, -2.00, 2.04, 2.00, -2.21, 2.07, 2.06, 2.02, 2.12, -2.07, 2.21, 2.01, -2.05, -2.16, 2.01, -2.00, 2.07, -2.12, 2.15, -2.04, -2.16, -2.05, 2.13, 2.04, 2.05, -2.05, 2.12, -2.06, -2.04, 2.05, -2.03, -2.01, -2.01, 2.12, 2.22, 2.29, -2.06, -2.02, 2.14, 2.09, 2.01, 2.14, 2.12, -2.06, 2.37, -2.10, -2.00, -2.04, 2.16, -2.06, -2.02, 2.04, 2.27, 2.28, -2.16, -2.00, 2.04, 2.01, -2.09, -2.04, 2.03, -2.02, 2.01, -2.06, 2.04, -2.09, 2.23, 2.44, -2.38, 2.21, 2.05, -2.00, -2.05, -2.00, 2.23, -2.03, -2.01, 2.03, -2.01, 2.02, -2.00, -2.02, 2.13, -2.02, -2.01, 2.06, -2.01, 2.08, 2.03, 2.05, -2.58, 2.01, 2.00, -2.01, 2.14, -2.04, 2.00, 2.26, -2.01, -2.02, 2.00, 2.03, 2.21, -2.01, 2.02, 2.09, -2.03, -2.02, -2.02, -2.09, -2.01, 2.01, -2.08, 2.02, 2.08, 2.18, 2.03, -2.10, 2.25, -2.06, -2.35, -2.08, 2.09, -2.01, 2.04, -2.06, 2.01, 2.02, -2.05, 2.06, -2.05, 2.00, 2.02, 2.33, 2.09, 2.73, -2.01, 2.08, -2.09, -2.01, -2.03, -2.02, -2.02, -2.11, 2.05, -2.06, 2.03, -2.06, 2.15, -2.02, 2.01, 2.07, 2.15, 2.04, 2.11, -2.03, 2.01, 2.06, 2.09, -2.06, 2.20, 2.08, -2.14, 2.34, 2.17, 2.01, -2.06, 2.11, 2.00, 2.72, -2.18, 2.06, -2.12, 2.22, -2.17, -2.12, 2.04, -2.28, -2.17, 2.05, 2.03, -2.25, -2.06, 2.21, 2.05, -2.14, -2.06, -2.08, -2.01, -2.10, 2.05, 2.04, -2.27, -2.84, -2.04, -2.13, -2.08, 2.24, -2.02, -2.00, 2.03, -2.07, -2.00, 2.04, 2.09, -2.10, 2.26, 2.36, -2.19, 2.06, -2.02, -2.02, 2.02, 2.18, 2.04, -2.04, 2.04, -2.03, -2.24, 2.49, -2.37, 2.06, -2.00, 2.31, 2.01, -2.05, -2.04, -2.00, -2.04, -2.06, -2.08, 2.27, 2.07, 3.52, 2.03, 2.03, -2.07, -2.07, 2.05, 2.46, 2.10, -2.01, -2.04, -2.03, -2.07, 2.02, -2.00, -2.02, -2.08, -2.05, 2.05, -2.00, -2.13, 2.04, -2.05, -2.05, 2.13, 2.01, 2.08, 2.16, 2.05, 2.09, -2.02, 2.15, -2.02, -2.05, -2.01, -2.00, 2.07, 2.04, -2.18, 2.11, 2.05, -2.01, -2.00, 2.29, 2.12, 2.58, 2.09, 2.02, -2.07, 2.13, 2.00, -2.01, -2.06, -2.01, 2.02, -2.01, 2.05, -2.08, 2.04, 2.03, -2.00, 2.13, 2.19, -2.01, -2.01, 2.00, -2.27, 2.04, -2.16, -2.01, 3.09, 2.17, -2.00, -2.05, -2.14, 2.04, 2.06, -2.21, 2.01, -2.02, -2.01]
+   const botsData = {
+    'Backtester1Y':[2.5184705337157345,-2.684938627938189,-2.6454507939110252,2.479494158257254,-2.6618565279403614,2.469643957606117,2.4637112810437594,-2.6505955801472427,2.470798614638466,2.5929207789336832],
+    'Backtester2Y': [-2.6902760647464152,2.5030453065855887,-2.64429034665291,2.5679239675294143,2.6524491102754153,-2.7383518936981743,-2.7724309871723833,2.509502148670402,-2.7138424282878932,2.5169143310022717,2.463972120343796,2.4813764284320605,-2.7088042724082126,-2.9518586613190343,2.785133626998985,2.47971221889991,2.4688518728570448,2.4816722285051167],
+    'Backtester3Y': [2.5639353712291086,-3.5109008471729433,3.0678262270647383,2.534090477864907,-2.8374381860428017,2.4885010078818475,-2.792963101504058,-3.0333620579257476,-2.6975932297963494,2.4668851080634973,2.4621456504947563,2.677564736665481],
+    'Backtester4Y': [-2.979626535520318,2.5159104129243985,2.5191793563563425,-2.6585411511807657,2.4774385007478688,-2.716993778084689,2.5676481494625527,-2.83682711264004,-3.006900185882845,2.915722132147557,-2.7430666430196338,2.580590914788638,2.466470539313084,2.538806993095068],
+    'Backtester5Y': [2.4623568447325823,-2.65150685804107,2.492912576957373,-2.77062880034549,2.5560845418518423,2.7264683034356643,2.612191269259393,2.4863362621464873,-2.6718375798865046,2.4708453878406864,2.4796591412992166,2.4989048550293425,-2.75324792809923,2.8295116256561053]
   };
 
   // 🔹 función existente para calcular métricas
@@ -40,7 +43,7 @@ const TradingBotsAnalysis = () => {
 
     let peak = 100;
     let maxDrawdown = 0;
-    let currentCapital = 100000;
+    let currentCapital = 100;
 
     leveragedTrades.forEach(pct => {
       currentCapital = currentCapital * (1 + pct / 100);
@@ -104,24 +107,61 @@ const TradingBotsAnalysis = () => {
 
   // 🔹 dataset para gráfico comparativo
   const comparativeData = (() => {
-    const firstBot = Object.keys(botsData)[0];
-    if (!firstBot) return [];
-
-    const curves = {};
-    for (const botName in botsData) {
-      curves[botName] = getEquityCurve(botsData[botName], leverage);
+  const curves = {};
+  let maxLength = 0;
+  
+  // Generar curvas y encontrar la longitud máxima
+  for (const botName in botsData) {
+    curves[botName] = getEquityCurve(botsData[botName], leverage);
+    if (curves[botName].length > maxLength) {
+      maxLength = curves[botName].length;
     }
+  }
 
-    const length = curves[firstBot].length;
-    const combined = [];
-    for (let i = 0; i < length; i++) {
-      const row = { trade: i + 1 };
-      for (const botName in curves) {
-        row[botName] = curves[botName][i]?.capital ?? null;
-      }
-      combined.push(row);
+  // Crear array combinado hasta la longitud máxima
+  const combined = [];
+  for (let i = 0; i < maxLength; i++) {
+    const row = { trade: i + 1 };
+    for (const botName in curves) {
+      // Si este bot tiene datos para este trade, usarlos; si no, null
+      row[botName] = i < curves[botName].length ? curves[botName][i].capital : null;
     }
-    return combined;
+    combined.push(row);
+  }
+  return combined;
+})();
+
+// 🔹 NUEVO: Gráfico secuencial acumulado (todos los años conectados)
+  const sequentialData = (() => {
+    let capital = 100;
+    let tradeCounter = 0;
+    const sequential = [];
+    
+    // Ordenar los bots por año (1Y, 2Y, 3Y, 4Y, 5Y)
+    const sortedBots = Object.keys(botsData).sort((a, b) => {
+      const yearA = parseInt(a.match(/(\d+)Y/)?.[1] || '0');
+      const yearB = parseInt(b.match(/(\d+)Y/)?.[1] || '0');
+      return yearA - yearB;
+    });
+
+    sortedBots.forEach((botName, botIndex) => {
+      const trades = botsData[botName];
+      
+      trades.forEach((pct, tradeIndex) => {
+        tradeCounter++;
+        capital = capital * (1 + (pct * leverage) / 100);
+        
+        sequential.push({
+          trade: tradeCounter,
+          capital: capital,
+          bot: botName,
+          year: botIndex + 1,
+          tradeInYear: tradeIndex + 1
+        });
+      });
+    });
+
+    return sequential;
   })();
 
   const irAInit = () => {
@@ -163,11 +203,10 @@ const TradingBotsAnalysis = () => {
           )}
         </div>
 
-        {/* Botones para elegir bot */}
-        <div className="mb-6 flex gap-4">
+        <div className="mb-4 sm:mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setSelectedBot('all')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base flex-shrink-0 ${
               selectedBot === 'all' 
                 ? 'bg-blue-600 text-white shadow-lg' 
                 : 'bg-white text-slate-700 hover:bg-blue-50'
@@ -179,7 +218,7 @@ const TradingBotsAnalysis = () => {
             <button
               key={bot}
               onClick={() => setSelectedBot(bot)}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base flex-shrink-0 ${
                 selectedBot === bot 
                   ? 'bg-blue-600 text-white shadow-lg' 
                   : 'bg-white text-slate-700 hover:bg-blue-50'
@@ -190,20 +229,22 @@ const TradingBotsAnalysis = () => {
           ))}
         </div>
 
-        {/* Tarjetas por bot */}
-        <div className="grid gap-6">
+        <div className="grid gap-4 sm:gap-6">
           {getBotData().map(([botName, data]) => (
             <div key={botName} className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <BarChart3 className="w-6 h-6" />
-                  {botName}
+              {/* Card Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
+                    {botName}
+                  </h2>
                   {leverage > 1 && (
-                    <span className="ml-auto bg-purple-500 px-3 py-1 rounded-full text-sm font-semibold">
+                    <span className="bg-purple-500 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-white self-start sm:ml-auto">
                       Apalancamiento x{leverage}
                     </span>
                   )}
-                </h2>
+                </div>
               </div>
 
               <div className="p-6">
@@ -269,39 +310,141 @@ const TradingBotsAnalysis = () => {
           ))}
         </div>
 
-        {/* 🔹 Gráfico comparativo */}
-        {comparativeData.length > 0 && (
+        {/* 🔹 Gráfico comparativo/secuencial unificado */}
+        {comparativeData.length > 0 && sequentialData.length > 0 && (
           <div className="mt-10 bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-slate-800 mb-4">
-              📊 Comparativa Curvas de Capital (todos los bots) {leverage > 1 ? `(x${leverage})` : ''}
-            </h3>
-            <div className="w-full h-80">
-              <ResponsiveContainer>
-                <LineChart
-                  data={comparativeData}
-                  margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-                >
-                  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                  <XAxis dataKey="trade" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  {Object.keys(botsData).map((botName, idx) => {
-                    const colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
-                    return (
+            {/* Toggle entre modos */}
+           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-800">
+               📊 {chartMode === 'comparative' ? 'Comparativa Curvas de Capital' : 'Evolución Secuencial Acumulada'} {leverage > 1 ? `(x${leverage})` : ''}
+              </h3>
+        <div className="flex gap-2 bg-slate-100 p-1 rounded-lg w-full sm:w-auto">
+            <button
+            onClick={() => setChartMode('comparative')}
+            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-medium transition-all text-sm sm:text-base ${
+            chartMode === 'comparative'
+            ? 'bg-white text-blue-600 shadow-md'
+            : 'text-slate-600 hover:text-slate-800'
+          }`}
+          >
+            Comparativa
+        </button>
+        <button
+          onClick={() => setChartMode('sequential')}
+          className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-medium transition-all text-sm sm:text-base ${
+            chartMode === 'sequential'
+              ? 'bg-white text-purple-600 shadow-md'
+              : 'text-slate-600 hover:text-slate-800'
+          }`}
+          >
+            Secuencial
+        </button>
+      </div>
+  </div>
+
+            {/* Descripción según el modo */}
+            <p className="text-sm text-slate-600 mb-4">
+              {chartMode === 'comparative' 
+                ? 'Todos los bots en paralelo desde el mismo punto de partida.'
+                : 'Cada año se conecta con el anterior. El capital final de un año es el inicial del siguiente (rendimiento compuesto total).'
+              }
+            </p>
+
+            {/* Gráfico Comparativo */}
+            {chartMode === 'comparative' && (
+              <div className="w-full h-80">
+                <ResponsiveContainer>
+                  <LineChart
+                    data={comparativeData}
+                    margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                  >
+                    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                    <XAxis dataKey="trade" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    {Object.keys(botsData).map((botName, idx) => {
+                      const colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
+                      return (
+                        <Line
+                          key={botName}
+                          type="monotone"
+                          dataKey={botName}
+                          stroke={colors[idx % colors.length]}
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      );
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Gráfico Secuencial */}
+            {chartMode === 'sequential' && (
+              <>
+                <div className="w-full h-96">
+                  <ResponsiveContainer>
+                    <LineChart
+                      data={sequentialData}
+                      margin={{ top: 5, right: 20, bottom: 13, left: 1 }}
+                    >
+                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                      <XAxis 
+                        dataKey="trade" 
+                        label={{ value: 'Operación Total', position: 'insideBottom', offset: -10 }}
+                      />
+                      <YAxis 
+                        label={{ value: 'Capital (%)', angle: -90, position: 'insideLeft' }}
+                      />
+                      <Tooltip 
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            return (
+                              <div className="bg-white p-3 border border-slate-300 rounded shadow-lg">
+                                <p className="font-bold text-slate-800">{data.bot}</p>
+                                <p className="text-sm text-slate-600">Operación #{data.trade}</p>
+                                <p className="text-sm text-slate-600">Trade {data.tradeInYear} del año {data.year}</p>
+                                <p className="text-lg font-bold text-blue-600">
+                                  {data.capital.toFixed(2)}%
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
                       <Line
-                        key={botName}
                         type="monotone"
-                        dataKey={botName}
-                        stroke={colors[idx % colors.length]}
-                        strokeWidth={2}
+                        dataKey="capital"
+                        stroke="#8b5cf6"
+                        strokeWidth={3}
                         dot={false}
                       />
-                    );
-                  })}
-                </LineChart>
-              </ResponsiveContainer>
-            </div> 
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                {/* Resumen final */}
+                <div className="mt-6 bg-purple-50 border-l-4 border-purple-600 p-4 rounded">
+                   <p className="text-sm text-slate-700">
+                   <strong>Capital Final (5 años acumulados):</strong>{' '}
+                   <span className={`text-xl font-bold ${getStatusColor(sequentialData[sequentialData.length - 1].capital - 100)}`}>
+                    {sequentialData[sequentialData.length - 1].capital.toFixed(2)}
+                    </span>
+                    {' '}
+                    <span className={`text-xl font-bold ${getStatusColor(sequentialData[sequentialData.length - 1].capital - 100)}`}>
+                    ({sequentialData[sequentialData.length - 1].capital >= 100 ? '+' : ''}{(sequentialData[sequentialData.length - 1].capital - 100).toFixed(2)}%)
+                    </span>
+                    </p>
+                    <p className="text-xs text-slate-600 mt-2">
+                    Capital inicial: 100 → Capital final: {sequentialData[sequentialData.length - 1].capital.toFixed(2)} | Total de operaciones: {sequentialData.length}
+                    </p>
+                  </div>
+              </>
+            )}
           </div>
         )}
           
