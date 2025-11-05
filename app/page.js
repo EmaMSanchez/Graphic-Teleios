@@ -8,7 +8,6 @@ export default function Home() {
   const [leverage, setLeverage] = useState(1);
   const router = useRouter();
   const botsData = {
-
     '1ºAño':[2.5184705337157345,-2.684938627938189,-2.6454507939110252,2.479494158257254,-2.6618565279403614,2.469643957606117,2.4637112810437594,-2.6505955801472427,2.470798614638466,2.5929207789336832],
     '2ºAño': [-2.6902760647464152,2.5030453065855887,-2.64429034665291,2.5679239675294143,2.6524491102754153,-2.7383518936981743,-2.7724309871723833,2.509502148670402,-2.7138424282878932,2.5169143310022717,2.463972120343796,2.4813764284320605,-2.7088042724082126,-2.9518586613190343,2.785133626998985,2.47971221889991,2.4688518728570448,2.4816722285051167],
     '3ºAño': [2.5639353712291086,-3.5109008471729433,3.0678262270647383,2.534090477864907,-2.8374381860428017,2.4885010078818475,-2.792963101504058,-3.0333620579257476,-2.6975932297963494,2.4668851080634973,2.4621456504947563,2.677564736665481],
@@ -90,11 +89,11 @@ const calculateReturns = (trades, leverageMultiplier = 1, initialCapital = 100) 
 
   const results = useMemo(() => ({
 
-    '1ºAño': calculateReturns(botsData['Backtester1Y'], leverage),
-    '2ºAño': calculateReturns(botsData['Backtester2Y'], leverage),
-    '3ºAño': calculateReturns(botsData['Backtester3Y'], leverage),
-    '4ºAño': calculateReturns(botsData['Backtester4Y'], leverage),
-    '5ºAño': calculateReturns(botsData['Backtester5Y'], leverage)
+    '1ºAño': calculateReturns(botsData['1ºAño'], leverage),
+    '2ºAño': calculateReturns(botsData['2ºAño'], leverage),
+    '3ºAño': calculateReturns(botsData['3ºAño'], leverage),
+    '4ºAño': calculateReturns(botsData['4ºAño'], leverage),
+    '5ºAño': calculateReturns(botsData['5ºAño'], leverage)
   }), [leverage]);
 
   const getBotData = () => {
